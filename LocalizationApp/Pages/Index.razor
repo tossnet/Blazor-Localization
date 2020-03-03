@@ -1,0 +1,29 @@
+﻿@page "/"
+@using Microsoft.Extensions.Localization
+@inject NavigationManager navigationManager
+
+<h1>@(localizer["titleIndex"])</h1>
+
+@(localizer["welcomeMsg"])
+
+
+<select @onchange="OnSelected">
+    <option>choisissez...</option>
+    <option value="fr-FR">Français</option>
+    <option value="en-US">English</option>
+</select>
+
+@code {
+    [Inject] public IStringLocalizer<Index> localizer { get; set; }
+
+    void OnSelected(ChangeEventArgs e)
+    {
+        var culture = (string)e.Value;
+        var uri = new Uri(navigationManager.Uri)
+            .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+        var query = $"?culture={Uri.EscapeDataString(culture)}&" +
+                    $"redirectionUri={Uri.EscapeDataString(uri)}";
+
+        navigationManager.NavigateTo("/Culture/SetCulture" + query, forceLoad: true);
+    }
+}
